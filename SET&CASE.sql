@@ -3,7 +3,7 @@
 --Write a query that returns the net price paid by the customer for each order. (Don't neglect discounts and quantities)
 
 
---bir sipari?in toplam net tutar?n? getiriniz. (mü?terinin sipari? için ödedi?i tutar)
+--bir sipari?in toplam net tutar?n? getiriniz. (mÃ¼?terinin sipari? iÃ§in Ã¶dedi?i tutar)
 --discount' ? ve quantity' yi ihmal etmeyiniz.
 
 
@@ -15,8 +15,8 @@
 --Generate different grouping variations that can be produced with the brand and category columns using 'ROLLUP'.
 -- Calculate sum total_sales_price
 
---brand, category, model_year sütunlar? için Rollup kullanarak total sales hesaplamas? yap?n.
---üç sütun için 4 farkl? gruplama varyasyonu üretiyor
+--brand, category, model_year sÃ¼tunlar? iÃ§in Rollup kullanarak total sales hesaplamas? yap?n.
+--Ã¼Ã§ sÃ¼tun iÃ§in 4 farkl? gruplama varyasyonu Ã¼retiyor
 
 
 SELECT Brand, Category, Model_Year, SUM(total_sales_price) TOTAL 
@@ -99,7 +99,7 @@ FROM sale.customer
 WHERE city IN ('Charlotte', 'Aurora') --- UNION ALL GIBI BUTUN VERILER GELIR
 
 
---Write a query that returns customers who name is ‘Thomas’ or surname is ‘Thomas’. (Don't use 'OR')
+--Write a query that returns customers who name is â€˜Thomasâ€™ or surname is â€˜Thomasâ€™. (Don't use 'OR')
 
 
 SELECT first_name, last_name
