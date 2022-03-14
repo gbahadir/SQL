@@ -42,12 +42,12 @@ Calisma sirasi :
 
 
 -- Syntax:
-
+/*
 SELECT column_1, aggregate_function(column_2)  -- aggregate_functions: sum, min, max, avg, count
 FROM table_name
 GROUP BY column_1
 HAVING search_condition;
-
+*/
 ---- GROUP BY ----
 -- GROUP BY yan tümcesi, satırları özet satırlar veya gruplar halinde gruplandırır. 
 
@@ -145,6 +145,7 @@ ORDER BY avg_list_price;
 
 -- GROUPING SETS operatörü, toplama işlemlerinde gruplandırılmış sütun gruplarını ifade eder.
 
+/*
 SELECT
     column1,
     column2,
@@ -169,7 +170,7 @@ GROUP BY
     GROUPING SETS (
         (seniority, graduation),
         (graduation)
-
+*/
 --------------------------------------------------
 -- Yeni tablo olusturalim
 
@@ -240,19 +241,6 @@ ORDER BY Brand, Category
 
 
 
--- PIVOToperatör, raporlama işlemlerinde pivot tablodaki satırların alanlara dönüştürülmesine izin verir. 
--- Gruplandırmaya dahil edilen her sütun için toplama işlemi tekrarlanır ve ayrı bir alan oluşturulur.
-
-SELECT [column_name], [pivot_value1], [pivot_value2], ...[pivot_value_n]
-FROM 
-table_name
-PIVOT 
-(
- aggregate_function(aggregate_column)
- FOR pivot_column
- IN ([pivot_value1], [pivot_value2], ... [pivot_value_n])
-) AS pivot_table_name;
-
 SELECT [seniority], [BSc], [MSc], [PhD]
 FROM 
 (
@@ -273,8 +261,9 @@ PIVOT
 -- Sağdan sola sıralı olarak parantez içinde yazılan sütun adlarından birer birer çıkararak gruplama kombinasyonları yapar. 
 -- Bu nedenle, sütunların yazıldığı sıra önemlidir.
 -- Her sutunun gruplarini kartezyen carpimi yapip sonuclarina aggregasyonu uyguluyor  
+-- üç sütun için 4 farklı gruplama varyasyonu üretiyor
 
-SELECT
+/* SELECT
     d1,
     d2,
     d3,
@@ -283,7 +272,7 @@ FROM
     table_name
 GROUP BY
     ROLLUP (d1, d2, d3);
-
+*/ 
 -------------------------------------------
 
 ----- HOMEWORK
@@ -293,12 +282,24 @@ GROUP BY
 --brand, category, model_year sütunları için Rollup kullanarak total sales hesaplaması yapın.
 --üç sütun için 4 farklı gruplama varyasyonu üretiyor
 
+SELECT Brand, Category, Model_Year, SUM(total_sales_price) TOTAL
+FROM sale.sales_summary
+GROUP BY
+	ROLLUP(Brand, Category, Model_Year)
+ORDER BY Model_Year, Category;
 
 
+---- CUBE ----
 
 -- CUBE operatörü, seçme operatöründe belirtilen tüm alanlar için tüm olası gruplama kombinasyonlarını yapar. 
 -- Sütunların yazıldığı sıra önemli değildir.
+-- Bu yöntemler daha çok periyodik raporlamada kullanılmaktadır. 
+-- Tek bir sorgu sonucunda verilerin farklı kırılımlarının elde edilmesini sağlarlar. 
+-- Tek bir sorguda farklı gruplama seçenekleri döndürülerek zaman ve kaynak tasarrufu sağlanır.
 
+-- Ayrıca karar vericilerin rapor edilen analizleri farklı yönlerden tek bakışta değerlendirmesini sağlar.
+
+/*
 SELECT
     d1,
     d2,
@@ -308,3 +309,151 @@ FROM
     table_name
 GROUP BY
     CUBE (d1, d2, d3);
+*/
+
+SELECT Brand, Category, Model_Year, SUM(total_sales_price)
+FROM sale.sales_summary
+GROUP BY
+	CUBE (Brand, Category, Model_Year)
+ORDER BY Brand, Category
+
+
+---- PIVOT ----
+
+-- PIVOT operatör, raporlama işlemlerinde pivot tablodaki satırların KOLONLARA dönüştürülmesine izin verir. 
+-- Transpozisyon yapar.
+-- Gruplandırmaya dahil edilen her sütun için toplama işlemi tekrarlanır ve ayrı bir alan oluşturulur.
+
+/*
+SELECT [column_name], [pivot_value1], [pivot_value2], ...[pivot_value_n]
+FROM 
+table_name
+PIVOT 
+(
+ aggregate_function(aggregate_column)
+ FOR pivot_column
+ IN ([pivot_value1], [pivot_value2], ... [pivot_value_n])
+) AS pivot_table_name;
+*/
+
+--Write a query that returns total sales amount by categories and model years
+
+
+SELECT *
+FROM
+(
+SELECT Category, total_sales_price  -- Secilen 1. kolona kolon isimlerini olusturan Group by fonksiyonu yapar, 2. kolona AGG fonksiyonunu uygular
+FROM sale.sales_summary
+) A
+PIVOT
+(
+	SUM(total_sales_price)
+	FOR Category
+	IN
+	([Audio & Video Accessories]
+	,[Bluetooth]
+	,[Car Electronics]
+	,[Computer Accessories]
+	,[Earbud]
+	,[gps]
+	,[Hi-Fi Systems]
+	,[Home Theater]
+	,[mp4 player]
+	,[Receivers Amplifiers]
+	,[Speakers]
+	,[Televisions & Accessories])
+) AS PIVOT_TABLE
+
+
+-- Gruo icinde subgrup olsuturarak pivot table
+
+SELECT *
+FROM
+(
+SELECT Category, Model_Year, total_sales_price  -- 3. kolon ekledik : Model_Year
+FROM sale.sales_summary
+) A
+PIVOT
+(
+	SUM(total_sales_price)
+	FOR Category
+	IN
+	([Audio & Video Accessories]
+	,[Bluetooth]
+	,[Car Electronics]
+	,[Computer Accessories]
+	,[Earbud]
+	,[gps]
+	,[Hi-Fi Systems]
+	,[Home Theater]
+	,[mp4 player]
+	,[Receivers Amplifiers]
+	,[Speakers]
+	,[Televisions & Accessories])
+) AS PIVOT_TABLE
+
+
+SELECT *
+FROM
+(
+SELECT Category, Model_Year, Brand, total_sales_price  -- 4. kolon ekledik : Model_Year
+FROM sale.sales_summary
+) A
+PIVOT
+(
+	SUM(total_sales_price)
+	FOR Category
+	IN
+	([Audio & Video Accessories]
+	,[Bluetooth]
+	,[Car Electronics]
+	,[Computer Accessories]
+	,[Earbud]
+	,[gps]
+	,[Hi-Fi Systems]
+	,[Home Theater]
+	,[mp4 player]
+	,[Receivers Amplifiers]
+	,[Speakers]
+	,[Televisions & Accessories])
+) AS PIVOT_TABLE
+
+---- PIVOT ile Dummy table yaptik
+
+SELECT *
+FROM
+(
+SELECT Category, Brand, Brand AS Brands   -- Ayni kolonu 2. kez eklemek gerekirse alias name vermek gerekir
+FROM sale.sales_summary
+) A
+PIVOT
+(
+	COUNT(Brand)
+	FOR Category
+	IN
+	([Audio & Video Accessories]
+	,[Bluetooth]
+	,[Car Electronics]
+	,[Computer Accessories]
+	,[Earbud]
+	,[gps]
+	,[Hi-Fi Systems]
+	,[Home Theater]
+	,[mp4 player]
+	,[Receivers Amplifiers]
+	,[Speakers]
+	,[Televisions & Accessories])
+) AS PIVOT_TABLE
+
+
+
+
+
+
+
+
+
+
+
+  
+    

@@ -54,3 +54,8 @@ WHERE NOT EXISTS(
 	FROM Satislar s
 	WHERE p.PersonelID = s.PersonelID)
 
+-- Günün sorusu: Write an SQL query to print the FIRST_NAME and LAST_NAME from employees table 
+-- into a single column FULL_NAME in uppercase. Use "+" between the first and the last name.
+
+select Upper(First_name) + ' ' + upper(Last_name) [FULL_NAME]
+from [sale].[staff]
