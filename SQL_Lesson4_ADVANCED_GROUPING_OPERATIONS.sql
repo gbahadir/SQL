@@ -336,6 +336,60 @@ PIVOT
 ) AS pivot_table_name;
 */
 
+
+-- ***** Kolondaki satirlari Pivot kolon ismi yapmak icin liste halinde ceken program *****
+-- Not: BikeStore Database kullandık.
+
+DECLARE 
+    @columns NVARCHAR(MAX) = '';
+-- select the category names
+SELECT 
+    @columns += QUOTENAME(category) + ','
+FROM 
+    sales.sales_summary
+ORDER BY 
+    category;
+-- remove the last comma
+SET @columns = LEFT(@columns, LEN(@columns) - 1);
+PRINT @columns;
+
+-- EĞER DİNAMİK BİR SORGU YAPMAK İSTERSEK
+-- (COLUMN DEĞERLERİ DEĞİŞSE BİLE GÜNCEL İSİMLERİNİ GETİRMESİ İÇİN..)
+
+DECLARE 
+    @columns NVARCHAR(MAX) = '', 
+    @sql     NVARCHAR(MAX) = '';
+-- select the category names
+SELECT 
+    @columns+=QUOTENAME(category) + ','
+FROM 
+    sales.sales_summary
+ORDER BY 
+    category;
+-- remove the last comma
+SET @columns = LEFT(@columns, LEN(@columns) - 1);
+-- construct dynamic SQL
+SET @sql ='
+SELECT * FROM   
+(
+    SELECT 
+        category,
+        model_year,
+        total_sales_price 
+    FROM 
+        sales.sales_summary
+) A 
+PIVOT(
+    SUM(total_sales_price)
+	FOR category IN ('+ @columns +')
+) AS pivot_table;'
+;
+-- execute the dynamic SQL
+
+EXECUTE sp_executesql @sql; (edited) 
+
+
+
 --Write a query that returns total sales amount by categories and model years
 
 

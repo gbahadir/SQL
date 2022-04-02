@@ -625,3 +625,76 @@ Bir tavsiye olarak, sonuçlara hızlı bir şekilde ihtiyacınız olduğunda Adh
 Sorgu başkaları tarafından okunacaksa, her gün çalıştırılacaksa veya yeniden kullanılacaksa, 
 okunabilirlik ve performans için bir CTE kullanmayı deneyin.
 */
+
+WITH t1 AS (
+    SELECT order_id, SUM((list_price - (list_price * discount)) * quantity) as total -- her siparişin toplam fiyatı
+    FROM sale.order_item
+    GROUP BY order_id
+	HAVING SUM((list_price - (list_price * discount)) * quantity) > 500
+),
+t2 AS (
+    SELECT customer_id, first_name, last_name, city
+    FROM sale.customer
+    WHERE city = 'Charleston'
+)
+SELECT t4.first_name, t4.last_name
+FROM (
+		SELECT t2.customer_id, t2.first_name, t2.last_name, t2.city, SUM(t1.total) AS total
+		FROM sale.orders t3
+		JOIN t1 ON t1.order_id = t3.order_id
+		JOIN t2 ON t2.customer_id =  t3.customer_id
+		GROUP BY t2.customer_id, t2.first_name, t2.last_name, t2.city
+		) AS t4
+WHERE t4.customer_id IN
+					(select c.customer_id
+					from sale.customer c
+					WHERE NOT EXISTS (
+									SELECT i.order_id, SUM((i.list_price - (i.list_price * i.discount)) * i.quantity)
+									FROM sale.order_item i, sale.orders o, sale.customer r
+									where i.order_id = o.order_id
+									and r.customer_id = o.customer_id
+									and r.customer_id = c.customer_id
+									group by i.order_id
+									having SUM((i.list_price - (i.list_price * i.discount)) * i.quantity) <= 500
+									)
+						)
+ORDER BY t4.last_name ASC, t4.first_name ASC;
+
+
+
+WITH t1 AS (
+    SELECT order_id, SUM((list_price - (list_price * discount)) * quantity) as total -- her siparişin toplam fiyatı
+    FROM sale.order_item
+    GROUP BY order_id
+	HAVING SUM((list_price - (list_price * discount)) * quantity) > 500
+),
+t2 AS (
+    SELECT customer_id, first_name, last_name, city
+    FROM sale.customer
+    WHERE city = 'Charleston'
+)
+SELECT t4.first_name, t4.last_name
+FROM (
+		SELECT t2.customer_id, t2.first_name, t2.last_name, t2.city, SUM(t1.total) AS total
+		FROM sale.orders t3
+		JOIN t1 ON t1.order_id = t3.order_id
+		JOIN t2 ON t2.customer_id =  t3.customer_id
+		GROUP BY t2.customer_id, t2.first_name, t2.last_name, t2.city
+		) AS t4
+WHERE t4.customer_id NOT IN
+					(select c.customer_id
+					from sale.customer c
+					WHERE EXISTS (
+									SELECT i.order_id, SUM((i.list_price - (i.list_price * i.discount)) * i.quantity)
+									FROM sale.order_item i, sale.orders o, sale.customer r
+									where i.order_id = o.order_id
+									and r.customer_id = o.customer_id
+									and r.customer_id = c.customer_id
+									group by i.order_id
+									having SUM((i.list_price - (i.list_price * i.discount)) * i.quantity) <= 500
+									)
+						)
+ORDER BY t4.last_name ASC, t4.first_name ASC;
+
+--------------------------
+

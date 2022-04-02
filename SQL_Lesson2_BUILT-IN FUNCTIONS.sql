@@ -268,6 +268,29 @@ SELECT STR(133215.654645, 11, 3);  -- Noktanin saginda 3 karakter kalacak sekild
   
 -- CONVERT Syntax:  
 -- CONVERT ( data_type [ ( length ) ] , expression [ , style ] )​
+
+/*VERİ TİPİNİ DÖNÜŞTÜRME
+
+SELECT CONVERT(varchar, '2017-08-25', 101);
+SELECT CAST('2017-08-25' AS varchar);
+date formatındaki bir veriyi char'a çevirdi.
+
+SELECT CONVERT(datetime, '2017-08-25');
+SELECT CAST('2017-08-25' AS datetime);
+char formatındaki bir veriyi datetime'a çevirdi.
+
+SELECT CONVERT(int, 25.65);
+SELECT CAST(25.65 AS int);
+decimal bir veriyi, integer'a (tam sayıya) çevirdi.
+
+SELECT CONVERT(DECIMAL(5,2), 12) AS decimal_value;
+SELECT CAST(12 AS DECIMAL(5,2) ) AS decimal_value;
+integer bir veriyi 5 rakamdan oluşan ve bunun virgülden sonrası 2 rakam olan decimal'e çevirdi.
+
+SELECT CONVERT(DECIMAL(7,2), ' 5800.79 ') AS decimal_value;
+SELECT CAST(' 5800.79 ' AS DECIMAL (7,2)) AS decimal_value;
+char (string) olan ama rakamdan oluşan veriyi decimal'e çevirdi.
+*/
 ​
 SELECT CAST (456123 AS CHAR)  -- Int'i str yaptik
 ​

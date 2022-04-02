@@ -85,6 +85,20 @@ CREATE TABLE [Person].[Person_Mail](
 
 
 ---------------------------------------------------------------------------------------------
+/*
+Fact tablosu, temel olarak, dimenson tablolarındaki PRIMARY KEY'lere atıfta bulunan ;
+measurements/facts ve
+FOREIGN KEY lerden oluşur.
+Fact tablosu, dimenson bir modelde birincil tablodur (primary table)
+Bir Dimenson tablosu, temel olarak text alanları olan descriptive (tanımlayıcı) niteliklerden oluşur.
+Bir FOREIGN KEY aracılığıyla Fact tablosuna join edilirler.
+Dimension tablolar normalize edilmemiş tablolardır.
+Dimenson'lar, niteliklerinin (attributes) yardımıyla fact'lerin descriptive karakteristiklerini sunar.
+Dimenson ayrıca bir veya daha fazla hiyerarşik ilişki (relationship) içerebilir
+*/
+
+--------------------------------------------------------------------------------------------------
+
 ---- INSERT ----
 -- bir tabloya satır ekler.
 --INSERT verilerin ekleneceği tabloyu veya görünümü belirtir.

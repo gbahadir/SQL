@@ -52,7 +52,7 @@ GROUP BY product_id
 ORDER BY 1
 
 -- window function ile yazalým
-SELECT SUM(quantity) OVER (PARTITION BY product_id)
+SELECT SUM(quantity) OVER (PARTITION BY product_id) AS Top_urun_mikt
 FROM production.stocks
 -- YENÝ BÝR SÜTUN OLARAK sonuç geldi ama tek sütun olduðu için anlamak zor. yanýna diðer sütunlarý da getirelim
 
